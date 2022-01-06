@@ -1,1 +1,50 @@
-export class Article {}
+import { AbstractEntity } from '../../helper/base-entity';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  RelationCount,
+} from 'typeorm';
+import { UserEntity } from '../../user/entities/user.entity';
+import { CommentEntity } from '../../comment/entities/comment.entity';
+import { instanceToPlain } from 'class-transformer';
+
+@Entity('article')
+export class ArticleEntity extends AbstractEntity {
+  @Column()
+  title: string;
+
+  @Column()
+  body: string;
+
+  @Column('simple-array')
+  tagList: string[];
+
+  @ManyToOne(() => UserEntity, (user) => user.articles)
+  author: UserEntity;
+
+  @ManyToMany(() => UserEntity, (user) => user.favorites)
+  favoritedBy: UserEntity[];
+
+  @RelationCount((article: ArticleEntity) => article.favoritedBy)
+  favoriteCount: number;
+
+  @OneToMany(() => CommentEntity, (comment) => comment.article)
+  comments: CommentEntity[];
+
+  toJSON(): Record<string, any> {
+    return instanceToPlain(this);
+  }
+
+  toArticle(user?: UserEntity) {
+    let favorited = null;
+    if (user) {
+      favorited = this.favoritedBy.map((fav) => fav.id).includes(user.id);
+    }
+    const article: any = this.toJSON();
+    delete article.favoritedBy;
+    return { ...article, favorited };
+  }
+}

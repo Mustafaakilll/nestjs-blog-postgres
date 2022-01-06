@@ -1,1 +1,71 @@
-export class User {}
+import { BeforeInsert, Column, Entity, ManyToMany, OneToMany } from 'typeorm';
+import { IsEmail } from 'class-validator';
+import { Exclude, instanceToPlain } from 'class-transformer';
+import * as bcrypt from 'bcryptjs';
+
+import { AbstractEntity } from '../../helper/base-entity';
+import { IMAGE_URL } from '../../helper/constants';
+import { ArticleEntity } from '../../article/entities/article.entity';
+import { JoinTable } from 'typeorm/browser';
+import { CommentEntity } from '../../comment/entities/comment.entity';
+
+@Entity('user')
+export class UserEntity extends AbstractEntity {
+  @Column({ unique: true })
+  username: string;
+
+  @IsEmail()
+  @Column({ unique: true })
+  email: string;
+
+  @Column()
+  @Exclude()
+  password: string;
+
+  @Column({ default: '' })
+  bio: string;
+
+  @Column({ default: IMAGE_URL })
+  image: string;
+
+  @ManyToMany(() => UserEntity, (user) => user.followee)
+  @JoinTable()
+  followers: UserEntity[];
+
+  @ManyToMany(() => UserEntity, (user) => user.followers)
+  @JoinTable()
+  followee: UserEntity[];
+
+  @OneToMany(() => ArticleEntity, (article) => article.id)
+  articles: ArticleEntity[];
+
+  @ManyToMany(() => ArticleEntity, (article) => article.favoritedBy)
+  favorites: ArticleEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.author)
+  comments: CommentEntity[];
+
+  @BeforeInsert()
+  async hashPassword(): Promise<void> {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  async comparePassword(attempt: string): Promise<boolean> {
+    return await bcrypt.compare(attempt, this.password);
+  }
+
+  toJSON() {
+    /// TODO: LOOK HERE FOR GENERIC TYPE
+    return instanceToPlain(this);
+  }
+
+  toProfile(user?: UserEntity) {
+    let following = null;
+    if (user) {
+      following = user.followers.includes(user);
+    }
+    const profile = this.toJSON();
+    delete profile.followers;
+    return { ...profile, following };
+  }
+}
