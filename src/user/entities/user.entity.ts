@@ -1,4 +1,11 @@
-import { BeforeInsert, Column, Entity, ManyToMany, OneToMany } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { IsEmail } from 'class-validator';
 import { Exclude, instanceToPlain } from 'class-transformer';
 import * as bcrypt from 'bcryptjs';
@@ -6,8 +13,9 @@ import * as bcrypt from 'bcryptjs';
 import { AbstractEntity } from '../../helper/base-entity';
 import { IMAGE_URL } from '../../helper/constants';
 import { ArticleEntity } from '../../article/entities/article.entity';
-import { JoinTable } from 'typeorm/browser';
 import { CommentEntity } from '../../comment/entities/comment.entity';
+import { UserResponseDTO } from '../dto/user-response.dto';
+import { ProfileResponseDTO } from '../dto/profile-response.dto';
 
 @Entity('user')
 export class UserEntity extends AbstractEntity {
@@ -54,17 +62,16 @@ export class UserEntity extends AbstractEntity {
     return await bcrypt.compare(attempt, this.password);
   }
 
-  toJSON() {
-    /// TODO: LOOK HERE FOR GENERIC TYPE
-    return instanceToPlain(this);
+  toJSON(): UserResponseDTO {
+    return <UserResponseDTO>instanceToPlain(this);
   }
 
-  toProfile(user?: UserEntity) {
+  toProfile(user?: UserEntity): ProfileResponseDTO {
     let following = null;
     if (user) {
       following = user.followers.includes(user);
     }
-    const profile = this.toJSON();
+    const profile: any = this.toJSON();
     delete profile.followers;
     return { ...profile, following };
   }

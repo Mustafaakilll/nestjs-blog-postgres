@@ -10,6 +10,7 @@ import {
 import { UserEntity } from '../../user/entities/user.entity';
 import { CommentEntity } from '../../comment/entities/comment.entity';
 import { instanceToPlain } from 'class-transformer';
+import { ArticleResponseDTO } from '../dto/article-response.dto';
 
 @Entity('article')
 export class ArticleEntity extends AbstractEntity {
@@ -34,11 +35,11 @@ export class ArticleEntity extends AbstractEntity {
   @OneToMany(() => CommentEntity, (comment) => comment.article)
   comments: CommentEntity[];
 
-  toJSON(): Record<string, any> {
-    return instanceToPlain(this);
+  toJSON(): ArticleResponseDTO {
+    return <ArticleResponseDTO>instanceToPlain(this);
   }
 
-  toArticle(user?: UserEntity) {
+  toArticle(user?: UserEntity): ArticleResponseDTO {
     let favorited = null;
     if (user) {
       favorited = this.favoritedBy.map((fav) => fav.id).includes(user.id);

@@ -3,6 +3,7 @@ import { AbstractEntity } from '../../helper/base-entity';
 import { ArticleEntity } from '../../article/entities/article.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 import { instanceToPlain } from 'class-transformer';
+import { CommentResponseDTO } from '../dto/comment-response.dto';
 
 @Entity('comment')
 export class CommentEntity extends AbstractEntity {
@@ -16,7 +17,6 @@ export class CommentEntity extends AbstractEntity {
   article: ArticleEntity;
 
   toJSON() {
-    /// TODO: LOOK HERE FOR GENERIC TYPE
-    return instanceToPlain(this);
+    return <CommentResponseDTO>instanceToPlain(this);
   }
 }
