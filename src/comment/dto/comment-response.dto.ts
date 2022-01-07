@@ -1,4 +1,4 @@
-import { ProfileResponse } from '../../user/dto/profile-response.dto';
+import { ProfileResponseDTO } from '../../user/dto/profile-response.dto';
 import { UserEntity } from '../../user/entities/user.entity';
 
 export class CommentResponseDTO {
@@ -6,5 +6,5 @@ export class CommentResponseDTO {
   body: string;
   createdAt: Date;
   updatedAt: Date;
-  author: ProfileResponse | UserEntity;
+  author: ProfileResponseDTO | UserEntity;
 }
