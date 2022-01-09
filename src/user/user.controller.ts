@@ -1,42 +1,62 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
-  Patch,
-  Post,
+  Put,
+  UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from '../helper/user.decorator';
+import { UserEntity } from './entities/user.entity';
+import { ProfileResponseDTO } from './dto/profile-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthResponseDTO } from '../auth/dto/auth-response.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @Get('/:username')
+  @UseGuards(AuthGuard())
+  async findByUsername(
+    @Param('username') username: string,
+    @User() user: UserEntity,
+  ): Promise<{ profile: ProfileResponseDTO }> {
+    const profile = await this.userService.findByUsername(username, user);
+    return { profile };
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
+  @Get('/:username/follow')
+  @UseGuards(AuthGuard())
+  async followUser(
+    @Param('username') username: string,
+    @User() user: UserEntity,
+  ): Promise<{ profile: ProfileResponseDTO }> {
+    const profile = await this.userService.followUser(user, username);
+    return { profile };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @Get('/:username/unfollow')
+  @UseGuards(AuthGuard())
+  async unfollowUser(
+    @Param('username') username: string,
+    @User() user: UserEntity,
+  ): Promise<{ profile: ProfileResponseDTO }> {
+    const profile = await this.userService.unfollowUser(user, username);
+    return { profile };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Put()
+  @UseGuards(AuthGuard())
+  async updateUser(
+    @Body('user', new ValidationPipe({ whitelist: true, transform: true }))
+    data: UpdateUserDto,
+    @User() { username }: UserEntity,
+  ): Promise<{ user: AuthResponseDTO }> {
+    const user = await this.userService.updateUser(username, data);
+    return { user };
   }
 }
