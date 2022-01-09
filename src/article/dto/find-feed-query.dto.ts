@@ -1,6 +1,4 @@
-import { FindAllQuery } from './find-all-query.dto';
-
-export interface FindFeedQuery extends FindAllQuery {
+export interface FindFeedQuery {
   tag?: string;
   author?: string;
   favorited?: string;

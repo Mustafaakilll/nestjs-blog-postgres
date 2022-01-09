@@ -2,6 +2,7 @@ import { AbstractEntity } from '../../helper/base-entity';
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -26,7 +27,8 @@ export class ArticleEntity extends AbstractEntity {
   @ManyToOne(() => UserEntity, (user) => user.articles)
   author: UserEntity;
 
-  @ManyToMany(() => UserEntity, (user) => user.favorites)
+  @ManyToMany(() => UserEntity, (user) => user.favorites, { eager: true })
+  @JoinTable()
   favoritedBy: UserEntity[];
 
   @RelationCount((article: ArticleEntity) => article.favoritedBy)
@@ -45,7 +47,6 @@ export class ArticleEntity extends AbstractEntity {
       favorited = this.favoritedBy.map((fav) => fav.id).includes(user.id);
     }
     const article: any = this.toJSON();
-    delete article.favoritedBy;
     return { ...article, favorited };
   }
 }
