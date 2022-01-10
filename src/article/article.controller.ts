@@ -20,10 +20,16 @@ import { AuthGuard } from '@nestjs/passport';
 import { FindFeedQuery } from './dto/find-feed-query.dto';
 import { CreateArticleDTO } from './dto/create-article.dto';
 import { UpdateArticleDTO } from './dto/update-article.dto';
+import { CommentService } from './comment.service';
+import { CreateCommentDTO } from './dto/create-comment.dto';
+import { CommentResponseDTO } from './dto/comment-response.dto';
 
 @Controller('article')
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly commentService: CommentService,
+  ) {}
 
   @Get()
   @UseGuards(OptionalAuthGuard)
@@ -104,5 +110,30 @@ export class ArticleController {
   ): Promise<{ article: ArticleResponseDTO }> {
     const article = await this.articleService.unfavoriteArticle(user, id);
     return { article };
+  }
+
+  @Get('/comment/:id')
+  async findCommentsByArticle(
+    @Param('id') id: number,
+  ): Promise<{ article: CommentResponseDTO[] }> {
+    const article = await this.commentService.findByArticleId(id);
+    return { article };
+  }
+
+  @Post('/comment/:id')
+  @UseGuards(AuthGuard())
+  async createComment(
+    @User() user: UserEntity,
+    @Body('comment', ValidationPipe) data: CreateCommentDTO,
+    @Param('id') id: number,
+  ) {
+    const article = await this.commentService.createComment(data, user, id);
+    return { article };
+  }
+
+  @Delete('/comment/:id')
+  @UseGuards(AuthGuard())
+  async deleteComment(@User() user: UserEntity, @Param('id') id: number) {
+    await this.commentService.deleteComment(id, user);
   }
 }

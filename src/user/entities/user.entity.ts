@@ -13,7 +13,7 @@ import * as bcrypt from 'bcryptjs';
 import { AbstractEntity } from '../../helper/base-entity';
 import { IMAGE_URL } from '../../helper/constants';
 import { ArticleEntity } from '../../article/entities/article.entity';
-import { CommentEntity } from '../../comment/entities/comment.entity';
+import { CommentEntity } from '../../article/entities/comment.entity';
 import { UserResponseDTO } from '../dto/user-response.dto';
 import { ProfileResponseDTO } from '../dto/profile-response.dto';
 

@@ -9,7 +9,7 @@ import {
   RelationCount,
 } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
-import { CommentEntity } from '../../comment/entities/comment.entity';
+import { CommentEntity } from './comment.entity';
 import { instanceToPlain } from 'class-transformer';
 import { ArticleResponseDTO } from '../dto/article-response.dto';
 
