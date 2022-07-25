@@ -1,3 +1,3 @@
-export interface AuthPayload {
+export type AuthPayload = {
   username: string;
-}
+};

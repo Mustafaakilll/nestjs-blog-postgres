@@ -1,6 +1,6 @@
 import { FindFeedQuery } from './find-feed-query.dto';
 
-export interface FindAllQuery extends FindFeedQuery {
+export type FindAllQuery = FindFeedQuery & {
   limit?: number;
   offset?: number;
-}
+};

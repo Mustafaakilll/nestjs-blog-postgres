@@ -1,6 +1,6 @@
 import { ProfileResponseDTO } from '../../user/dto/profile-response.dto';
 
-export class ArticleResponseDTO {
+export type ArticleResponseDTO = {
   title: string;
   body: string;
   tagList: string[];
@@ -9,4 +9,4 @@ export class ArticleResponseDTO {
   updatedAt: Date | null;
   favorited: boolean;
   favoriteCount: number;
-}
+};

@@ -9,4 +9,7 @@ export class CreateArticleDTO {
 
   @IsArray()
   tagList: string[];
+
+  @IsString()
+  coverImage: string;
 }

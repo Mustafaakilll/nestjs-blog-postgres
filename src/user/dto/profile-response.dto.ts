@@ -1,5 +1,5 @@
 import { UserResponseDTO } from './user-response.dto';
 
-export class ProfileResponseDTO extends UserResponseDTO {
+export type ProfileResponseDTO = UserResponseDTO & {
   following: boolean | null;
-}
+};

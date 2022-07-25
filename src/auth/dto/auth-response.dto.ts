@@ -1,5 +1,3 @@
 import { UserResponseDTO } from '../../user/dto/user-response.dto';
 
-export interface AuthResponseDTO extends UserResponseDTO {
-  token: string;
-}
+export type AuthResponseDTO = { user: UserResponseDTO; token: string };
