@@ -24,7 +24,7 @@ export class AuthService {
       await user.save();
       const payload = { username: user.username };
       const token = this.jwtService.sign(payload);
-      return { ...user.toJSON(), token };
+      return { user: user.toJSON(), token: token };
     } catch (e) {
       if (e.code === '23505') {
         throw new ConflictException('Username already have been taken');
@@ -36,19 +36,22 @@ export class AuthService {
   async login({ email, password }: LoginDTO): Promise<AuthResponseDTO> {
     try {
       const user = await this.userRepo.findOne({ where: { email } });
-      await user.comparePassword(password);
+      const isValid = await user.comparePassword(password);
+      if (!isValid) {
+        throw new BadRequestException('Your email or password are wrong');
+      }
       const payload = { username: user.username };
       const token = this.jwtService.sign(payload);
-      return { ...user.toJSON(), token };
+      return { user: user.toJSON(), token: token };
     } catch (e) {
-      throw new BadRequestException('Your username or password are wrong');
+      throw new BadRequestException('Your email or password are wrong');
     }
   }
 
-  async findCurrentUser(username: string) {
+  async findCurrentUser(username: string): Promise<AuthResponseDTO> {
     const user = await this.userRepo.findOne({ where: { username } });
     const payload = { username };
     const token = this.jwtService.sign(payload);
-    return { ...user, token };
+    return { user: user, token: token };
   }
 }

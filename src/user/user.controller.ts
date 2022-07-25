@@ -52,10 +52,11 @@ export class UserController {
   @Put()
   @UseGuards(AuthGuard())
   async updateUser(
-    @Body('user', new ValidationPipe({ whitelist: true, transform: true }))
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
     data: UpdateUserDto,
     @User() { username }: UserEntity,
   ): Promise<{ user: AuthResponseDTO }> {
+    // TODO: Look here for change `updatedAt` field
     const user = await this.userService.updateUser(username, data);
     return { user };
   }

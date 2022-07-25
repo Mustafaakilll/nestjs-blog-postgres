@@ -1,4 +1,3 @@
-import { AbstractEntity } from '../../helper/base-entity';
 import {
   Column,
   Entity,
@@ -8,10 +7,11 @@ import {
   OneToMany,
   RelationCount,
 } from 'typeorm';
-import { UserEntity } from '../../user/entities/user.entity';
 import { CommentEntity } from './comment.entity';
 import { instanceToPlain } from 'class-transformer';
-import { ArticleResponseDTO } from '../dto/article-response.dto';
+import { ArticleResponseDTO } from '../../article/dto/article-response.dto';
+import { AbstractEntity } from '../../helper/base-entity';
+import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('article')
 export class ArticleEntity extends AbstractEntity {
@@ -33,6 +33,9 @@ export class ArticleEntity extends AbstractEntity {
 
   @RelationCount((article: ArticleEntity) => article.favoritedBy)
   favoriteCount: number;
+
+  @Column()
+  coverImage: string;
 
   @OneToMany(() => CommentEntity, (comment) => comment.article)
   comments: CommentEntity[];

@@ -32,7 +32,7 @@ export class CommentService {
     id: number,
   ): Promise<CommentResponseDTO> {
     const article = await this.articleRepo.findOne({ where: { id } });
-    const comment = await this.commentRepo.create(data);
+    const comment = this.commentRepo.create(data);
     comment.article = article;
     comment.author = user;
     await comment.save();

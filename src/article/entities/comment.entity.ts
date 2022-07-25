@@ -1,9 +1,9 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { AbstractEntity } from '../../helper/base-entity';
 import { ArticleEntity } from './article.entity';
-import { UserEntity } from '../../user/entities/user.entity';
 import { instanceToPlain } from 'class-transformer';
-import { CommentResponseDTO } from '../dto/comment-response.dto';
+import { CommentResponseDTO } from '../../article/dto/comment-response.dto';
+import { AbstractEntity } from '../../helper/base-entity';
+import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('comment')
 export class CommentEntity extends AbstractEntity {

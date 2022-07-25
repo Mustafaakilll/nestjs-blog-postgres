@@ -41,10 +41,11 @@ export class ArticleService {
     if (query.favorited) {
       queryOptions.where['favoritedBy.username'] = query.favorited;
     }
-
-    return (await this.articleRepo.find(queryOptions)).map((article) =>
-      article.toArticle(user),
-    );
+    const article = await this.articleRepo.find({
+      ...queryOptions,
+      relations: ['author'],
+    });
+    return article.map((art) => art.toArticle(user));
   }
 
   async findFeed(
@@ -88,7 +89,7 @@ export class ArticleService {
     user: UserEntity,
     data: CreateArticleDTO,
   ): Promise<ArticleResponseDTO> {
-    const article = await this.articleRepo.create(data);
+    const article = this.articleRepo.create(data);
     article.author = user;
     await this.upsertTags(article.tagList);
     const { id } = await article.save();
@@ -129,7 +130,7 @@ export class ArticleService {
     id: number,
   ): Promise<ArticleResponseDTO> {
     const article = await this.findById(id);
-    article.favoritedBy.push(user);
+    // article.favoritedBy.push(user);
     await article.save();
     return (await this.findById(id)).toArticle(user);
   }

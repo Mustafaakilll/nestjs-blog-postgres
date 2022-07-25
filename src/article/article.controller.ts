@@ -36,7 +36,7 @@ export class ArticleController {
   async findAll(
     @User() user: UserEntity,
     @Query() query: FindAllQuery,
-  ): Promise<{ count: number; articles: ArticleResponseDTO[] }> {
+  ): Promise<{ articles: ArticleResponseDTO[]; count: number }> {
     const articles = await this.articleService.findAll(user, query);
     return { articles, count: articles.length };
   }
@@ -64,7 +64,7 @@ export class ArticleController {
   @Post()
   @UseGuards(AuthGuard())
   async createArticle(
-    @Body('article', ValidationPipe) data: CreateArticleDTO,
+    @Body(ValidationPipe) data: CreateArticleDTO,
     @User() user: UserEntity,
   ): Promise<{ article: ArticleResponseDTO }> {
     const article = await this.articleService.createArticle(user, data);
@@ -75,7 +75,7 @@ export class ArticleController {
   @UseGuards(AuthGuard())
   async updateArticle(
     @User() user: UserEntity,
-    @Body('article') data: UpdateArticleDTO,
+    @Body() data: UpdateArticleDTO,
     @Param('id') id: number,
   ): Promise<{ article: ArticleResponseDTO }> {
     const article = await this.articleService.updateArticle(user, data, id);
@@ -124,16 +124,19 @@ export class ArticleController {
   @UseGuards(AuthGuard())
   async createComment(
     @User() user: UserEntity,
-    @Body('comment', ValidationPipe) data: CreateCommentDTO,
+    @Body(ValidationPipe) data: CreateCommentDTO,
     @Param('id') id: number,
-  ) {
+  ): Promise<{ article: CommentResponseDTO }> {
     const article = await this.commentService.createComment(data, user, id);
     return { article };
   }
 
   @Delete('/comment/:id')
   @UseGuards(AuthGuard())
-  async deleteComment(@User() user: UserEntity, @Param('id') id: number) {
+  async deleteComment(
+    @User() user: UserEntity,
+    @Param('id') id: number,
+  ): Promise<void> {
     await this.commentService.deleteComment(id, user);
   }
 }

@@ -20,7 +20,7 @@ export class UserService {
   ): Promise<ProfileResponseDTO> {
     const profile = await this.userRepo.findOne({
       where: { username },
-      relations: ['followers'],
+      relations: ['followers', 'articles'],
     });
 
     return profile.toProfile(user);
@@ -35,7 +35,7 @@ export class UserService {
     }
     const user = await this.userRepo.findOne({
       where: { username },
-      relations: ['followers'],
+      relations: ['followers', 'articles'],
     });
     user.followers.push(currentUser);
     await user.save();
@@ -50,7 +50,7 @@ export class UserService {
       throw new BadRequestException('You cant unfollow yourself');
     const user = await this.userRepo.findOne({
       where: { username },
-      relations: ['follower'],
+      relations: ['followers', 'articles'],
     });
     user.followers = user.followers.filter(
       (follower) => follower.id !== currentUser.id,
@@ -67,6 +67,6 @@ export class UserService {
     const user = await this.userRepo.findOne({ where: { username } });
     const payload = { username };
     const token = this.jwtService.sign(payload);
-    return { ...user.toJSON(), token };
+    return { user: user.toJSON(), token: token };
   }
 }

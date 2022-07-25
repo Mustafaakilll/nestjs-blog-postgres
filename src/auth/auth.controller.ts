@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDTO } from './dto/register.dto';
-import { AuthResponseDTO } from './dto/auth-response.dto';
 import { LoginDTO } from './dto/login.dto';
+import { AuthResponseDTO } from './dto/auth-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,22 +18,24 @@ export class AuthController {
   @Post('/register')
   async register(
     @Body(ValidationPipe) credentials: RegisterDTO,
-  ): Promise<{ user: AuthResponseDTO }> {
+  ): Promise<AuthResponseDTO> {
     const user = await this.authService.register(credentials);
-    return { user };
+    return user;
   }
 
   @Post('/login')
   async login(
-    @Body('user', ValidationPipe) credentials: LoginDTO,
-  ): Promise<{ user: AuthResponseDTO }> {
+    @Body(ValidationPipe) credentials: LoginDTO,
+  ): Promise<AuthResponseDTO> {
     const user = await this.authService.login(credentials);
-    return { user };
+    return user;
   }
 
   @Get('/me')
-  async findCurrentUser(@Query('username') username: string) {
+  async findCurrentUser(
+    @Query('username') username: string,
+  ): Promise<AuthResponseDTO> {
     const user = await this.authService.findCurrentUser(username);
-    return { user };
+    return user;
   }
 }
